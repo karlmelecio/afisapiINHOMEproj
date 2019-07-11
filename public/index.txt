@@ -1,0 +1,141 @@
+!DOCTYPE html
+html
+head
+  link href='httpsfonts.googleapis.comcssfamily=Roboto100,300,400,500,700,900Material+Icons' rel=stylesheet
+  link href=httpscdn.jsdelivr.netnpmvuetifydistvuetify.min.css rel=stylesheet
+  meta name=viewport content=width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui
+  script src=httpscdn.jsdelivr.netnpmvuedistvue.jsscript
+  script src=httpscdn.jsdelivr.netnpmvuetifydistvuetify.jsscript
+  script src=httpsunpkg.comaxiosdistaxios.min.jsscript
+head
+body style=background-colorwheat
+    
+  div id=app
+    v-appstyle
+      v-content
+        v-container
+
+            v-layout align-center justify-center
+
+            v-flex xs4
+                v-select items=breeds
+                        item-text=name
+                        v-model=selected_breed
+                        label=Cat Breeds
+                        return-object
+                        attachv-select
+            v-flex            
+            v-layout
+            v-layout
+                v-flex xs12 sm4 offset-sm4
+                  v-card
+                
+  v-carousel
+      v-carousel-item
+        v-for=(item,i) in images
+        key=i
+        src=item.url
+      v-carousel-item
+    v-carousel
+            
+                    v-card-title primary-title
+
+                    div class=text-xs-center
+                        v-chip
+                                v-avatar
+                                  img src=country_flag_url alt=selected_breed.country_code
+                                v-avatar
+                        {{selected_breed.origin}}v-chip
+                        v-chip v-if=selected_breed.experimental==1Experimentalv-chip
+                        v-chip v-if=selected_breed.rex==1Rexv-chip
+                        v-chip v-if=selected_breed.natural==1Naturalv-chip
+                        v-chip v-if=selected_breed.rare==1Rarev-chip
+                        v-chip v-if=selected_breed.hairless==1Hairlessv-chip
+                        v-chip v-if=selected_breed.suppressed_tail==1Suppressed Tailv-chip
+                        v-chip v-if=selected_breed.short_legs==1Short Legsv-chip
+                        v-chip v-if=selected_breed.hypoallergenic==1Hypoallergenicv-chip
+                    div
+                      div
+                        h3 class=headline mb-0{{selected_breed.name}}h3
+                        div{{selected_breed.description}}div
+                        divdiv
+                        divi{{selected_breed.temperament}}idiv
+                      div
+                      
+                    v-card-title
+
+                  v-card
+                v-flex
+              v-layout
+        v-container
+      v-content
+    v-app
+  div
+ 
+  script
+      
+    new Vue({ 
+        el '#app',
+        data {
+            country_flag_url,
+          images [],
+          breeds[],
+          selected_breed {},
+          current_image {}
+        },
+        created(){
+            this.getBreeds();
+        } ,
+        watch {
+           
+            selected_breed function()
+            {
+                console.log(this.selected_breed)
+                let country_code = this.selected_breed.country_code.toLowerCase();
+                this.country_flag_url = `httpscdnjs.cloudflare.comajaxlibsflag-icon-css3.2.1flags1x1${country_code}.svg`;
+                this.getImages();
+            }
+        },
+        methods{
+            async getBreeds()
+            {
+                try{
+                    axios.defaults.headers.common['x-api-key'] = DEMO-API-KEY 
+                    let response = await axios.get('httpsapi.thecatapi.comv1breeds' ) 
+                    this.breeds = response.data;
+                
+                    
+                
+                    this.selected_breed = this.breeds[10]
+                }catch(err){
+                    console.log(err)
+                }
+            },
+            async getImages()
+            {
+                try{
+                    
+                    let query_params = {
+                        breed_ids this.selected_breed.id,
+                        limit8
+                    }
+                    let response = await axios.get('httpsapi.thecatapi.comv1imagessearch', { params query_params} ) 
+                    
+                    this.pagination_count = response.headers['pagination-count'];
+                    this.images = response.data 
+                    this.current_image = this.images[0]
+                    
+                    console.log(-- (+this.images.length +) Images from TheCatAPI.com)
+                    console.log( this.pagination_count ,'images available for this query.')
+                    
+                }catch(err){
+                    console.log(err)
+                }
+            }
+            
+        }
+    })
+    
+  script
+body
+html
